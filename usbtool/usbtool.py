@@ -42,6 +42,7 @@ from clicktool import click_global_options
 from clicktool import tvicgvd
 from globalverbose import gvd
 from mptool import output
+from serialtool import SerialMinimal
 
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 

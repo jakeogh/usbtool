@@ -3,7 +3,7 @@
 import fastentrypoints
 from setuptools import find_packages, setup
 
-dependencies = ["click"]
+dependencies = ["click", "serialtool @ git+https://git@github.com/jakeogh/serialtool",]
 
 config = {
     "version": "0.1",
