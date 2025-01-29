@@ -89,6 +89,8 @@ def get_usb_id_for_device(device) -> str:
 def get_device_for_usb_id(usb_id) -> str:
     assert len(usb_id) == 9
     assert ":" in usb_id
+    assert usb_id in get_usb_id_dict().keys()
+
     _device_list = get_usb_tty_device_list()
     for _ in _device_list:
         _id = get_usb_id_for_device(_)
