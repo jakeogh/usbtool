@@ -50,6 +50,18 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 signal(SIGPIPE, SIG_DFL)
 
 
+def get_usb_ids():
+    ids = []
+    _ = sh.lsusb()
+    _lines = _.splitlines()
+    for _l in _lines:
+        _id = _l.split("ID ")[1].split(" ")[0]
+        icp(_id)
+        ids.append(_id)
+    icp(ids)
+    return ids
+
+
 def get_usb_tty_device_list() -> tuple[str, ...]:
     _bus_path = Path("/sys/bus/usb-serial/devices/")
     _device_list = tuple(_bus_path.iterdir())
@@ -153,3 +165,26 @@ def _get_device_for_usb_id(
 
     _ = get_device_for_usb_id(usb_id)
     output(f"/dev/{_.name}", reason=None, tty=tty, dict_output=False)
+
+
+@cli.command("get-usb-ids")
+@click_add_options(click_global_options)
+@click.pass_context
+def _get_usb_ids(
+    ctx,
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+) -> None:
+
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+
+    _ = get_usb_ids()
+    for _id in _:
+        output(_id, reason=None, tty=tty, dict_output=False)
