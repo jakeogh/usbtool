@@ -56,11 +56,8 @@ def get_usb_id_dict():
     _lines = _.splitlines()
     for _l in _lines:
         _id = _l.split("ID ")[1].split(" ")[0]
-        # icp(_id)
         _description = " ".join(_l.split("ID ")[1].split(" ")[1:])
-        # icp(_description)
         ids[_id] = _description
-    # icp(ids)
     return ids
 
 
@@ -96,7 +93,7 @@ def get_device_for_usb_id(usb_id) -> str:
     for _ in _device_list:
         _id = get_usb_id_for_device(_)
         if _id == usb_id:
-            return _
+            return f"/dev/{_.name}"
     raise ValueError(usb_id)
 
 
@@ -166,7 +163,7 @@ def _get_device_for_usb_id(
     )
 
     _ = get_device_for_usb_id(usb_id)
-    output(f"/dev/{_.name}", reason=None, tty=tty, dict_output=False)
+    output(_, reason=None, tty=tty, dict_output=False)
 
 
 @cli.command("get-usb-ids")
