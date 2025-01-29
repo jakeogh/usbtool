@@ -189,4 +189,4 @@ def _get_usb_ids(
 
     _ = get_usb_id_dict()
     for _id, _description in _.items():
-        output(f"{_id}:{_description}", reason=None, tty=tty, dict_output=False)
+        output(f"{_id} {_description}", reason=None, tty=tty, dict_output=False)
