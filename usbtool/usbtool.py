@@ -50,14 +50,16 @@ sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 signal(SIGPIPE, SIG_DFL)
 
 
-def get_usb_ids():
-    ids = []
+def get_usb_id_dict():
+    ids = {}
     _ = sh.lsusb()
     _lines = _.splitlines()
     for _l in _lines:
         _id = _l.split("ID ")[1].split(" ")[0]
         icp(_id)
-        ids.append(_id)
+        _description = " ".join(_l.split("ID ")[1].split(" ")[1:])
+        icp(_description)
+        ids[_id] = _description
     icp(ids)
     return ids
 
@@ -185,6 +187,6 @@ def _get_usb_ids(
         gvd=gvd,
     )
 
-    _ = get_usb_ids()
-    for _id in _:
-        output(_id, reason=None, tty=tty, dict_output=False)
+    _ = get_usb_id_dict()
+    for _id, _description in _.items():
+        output(f"{_id}:{_description}", reason=None, tty=tty, dict_output=False)
