@@ -56,11 +56,11 @@ def get_usb_id_dict():
     _lines = _.splitlines()
     for _l in _lines:
         _id = _l.split("ID ")[1].split(" ")[0]
-        icp(_id)
+        # icp(_id)
         _description = " ".join(_l.split("ID ")[1].split(" ")[1:])
-        icp(_description)
+        # icp(_description)
         ids[_id] = _description
-    icp(ids)
+    # icp(ids)
     return ids
 
 
