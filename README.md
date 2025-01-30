@@ -29,10 +29,10 @@ Options:
 $ usbtool find-device --baud-rate 921600 100253411003 065341
 _devices=['/dev/ttyUSB1', '/dev/ttyUSB0']
 serial_url='spy:///dev/ttyUSB1?file=/dev/null'
-f{_tx_bytes=}
+_tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'' _expected_rx_bytes=b'\x06SA'
 serial_url='spy:///dev/ttyUSB0?file=/dev/null'
-f{_tx_bytes=}
+_tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'\x06SA' _expected_rx_bytes=b'\x06SA'
 ¬/dev/ttyUSB0
 ```
