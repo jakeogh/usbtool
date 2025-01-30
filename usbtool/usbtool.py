@@ -80,7 +80,6 @@ def get_usb_id_for_device(device) -> str:
     for index, _l in enumerate(_lines):
         _l = _l.strip()
         if _l.startswith("ATTRS{idProduct}=="):
-            # ic(_l)
             id_product = _l.split('"')[1]
             # ic(id_product)
             id_vendor = _lines[index + 1].split('"')[1]
