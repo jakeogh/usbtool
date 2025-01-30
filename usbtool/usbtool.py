@@ -254,6 +254,7 @@ def _find_device(
 
             _bytes_written = serial.ser.write(_tx_bytes)
             assert _bytes_written == len(_tx_bytes)
+            icp(_tx_bytes)
             _expected_rx_bytes = bytes.fromhex(response_hex)
             _bytes_read = serial.ser.readall()
             icp(_bytes_read, _expected_rx_bytes)
