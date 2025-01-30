@@ -87,7 +87,6 @@ def get_usb_id_for_device(device) -> str:
             id_vendor = _lines[index + 1].split('"')[1]
             # ic(id_vendor)
             usb_id = f"{id_vendor}:{id_product}"
-            # ic(usb_id)
             return usb_id
     raise ValueError(device)
 
