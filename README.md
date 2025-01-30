@@ -27,12 +27,12 @@ Options:
   --help                Show this message and exit.
 
 $ usbtool find-device --baud-rate 921600 100253411003 065341
-ic| 1738270333.442 30884 usbtool:8<click>→ /usbtool.py@ _find_device():241- _devices: ['/dev/ttyUSB1', '/dev/ttyUSB0']
+ic| 1738271842.687 9839 usbtool:8<click>→ /usbtool.py@ _find_device():240- _devices: ['/dev/ttyUSB1', '/dev/ttyUSB0']
 serial_url='spy:///dev/ttyUSB1?file=/dev/null'
-ic| 1738270334.576 30884 usbtool:8<click>→ /usbtool.py@ _find_device():256- _tx_bytes: b'\x10\x02SA\x10\x03'
-ic| 1738270335.583 30884 usbtool:8<click>→ /usbtool.py@ _find_device():259- _bytes_read: b'', _expected_rx_bytes: b'\x06SA'
+ic| 1738271843.820 9839 usbtool:8<click>→ /usbtool.py@ _find_device():255- _tx_bytes: b'\x10\x02SA\x10\x03'
+ic| 1738271844.829 9839 usbtool:8<click>→ /usbtool.py@ _find_device():258- _bytes_read: b'', _expected_rx_bytes: b'\x06SA'
 serial_url='spy:///dev/ttyUSB0?file=/dev/null'
-ic| 1738270336.592 30884 usbtool:8<click>→ /usbtool.py@ _find_device():256- _tx_bytes: b'\x10\x02SA\x10\x03'
-ic| 1738270338.597 30884 usbtool:8<click>→ /usbtool.py@ _find_device():259- _bytes_read: b'\x06SA', _expected_rx_bytes: b'\x06SA'
+ic| 1738271845.842 9839 usbtool:8<click>→ /usbtool.py@ _find_device():255- _tx_bytes: b'\x10\x02SA\x10\x03'
+ic| 1738271847.852 9839 usbtool:8<click>→ /usbtool.py@ _find_device():258- _bytes_read: b'\x06SA', _expected_rx_bytes: b'\x06SA'
 �/dev/ttyUSB0
 ```

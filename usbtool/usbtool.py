@@ -41,6 +41,7 @@ from clicktool import CONTEXT_SETTINGS
 from clicktool import click_add_options
 from clicktool import click_global_options
 from clicktool import tvicgvd
+from eprint import eprint
 from globalverbose import gvd
 from mptool import output
 from serialtool import SerialMinimal
@@ -49,7 +50,6 @@ from timetool import get_year_month_day
 sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
 
 
-# this should be earlier in the imports, but isort stops working
 signal(SIGPIPE, SIG_DFL)
 
 DATA_DIR = Path(os.path.expanduser("~")) / Path(".usbtool") / Path(get_year_month_day())
@@ -78,7 +78,6 @@ def get_usb_id_for_device(device) -> str:
     # ic(_)
     _lines = _.splitlines()
     for index, _l in enumerate(_lines):
-        # ic(index, _l)
         _l = _l.strip()
         if _l.startswith("ATTRS{idProduct}=="):
             # ic(_l)
@@ -112,6 +111,53 @@ def get_devices_for_usb_id(usb_id) -> list[str]:
     if devices:
         return devices
     raise ValueError(usb_id)
+
+
+def find_device(
+    command_hex: str,
+    response_hex: str,
+    baud_rate: int,
+    timeout: int = 1,
+    usb_id: str | None = None,
+    log_serial_data: bool = False,
+    data_dir: Path = DATA_DIR,
+):
+    if command_hex:
+        if not response_hex:
+            raise ValueError(
+                "--command-hex requires that --response-hex also be specified."
+            )
+
+    if usb_id:
+        _devices = get_devices_for_usb_id(usb_id)
+    else:
+        _devices = get_devices()
+
+    eprint(f"{_devices=}")
+
+    for _ in _devices:
+        if command_hex:
+            _tx_bytes = bytes.fromhex(command_hex)
+            serial = SerialMinimal(
+                data_dir=data_dir,
+                log_serial_data=log_serial_data,
+                serial_port=_,
+                baud_rate=baud_rate,
+                default_timeout=timeout,
+            )
+
+            _bytes_written = serial.ser.write(_tx_bytes)
+            assert _bytes_written == len(_tx_bytes)
+            eprint("f{_tx_bytes=}")
+            _expected_rx_bytes = bytes.fromhex(response_hex)
+            _bytes_read = serial.ser.readall()
+            eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
+            if _bytes_read == _expected_rx_bytes:
+                return _
+                # bug more than one device may match
+    raise ValueError(
+        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=}, {timeout=}"
+    )
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True, cls=AHGroup)
@@ -225,40 +271,18 @@ def _find_device(
         gvd=gvd,
     )
 
-    ser = None
-    if command_hex:
-        if not response_hex:
-            raise ValueError(
-                "--command-hex requires that --response-hex also be specified."
-            )
+    _ = find_device(
+        command_hex=command_hex,
+        response_hex=response_hex,
+        baud_rate=baud_rate,
+        timeout=timeout,
+        usb_id=usb_id,
+        log_serial_data=log_serial_data,
+        data_dir=data_dir,
+    )
 
-    if usb_id:
-        _devices = get_devices_for_usb_id(usb_id)
-    else:
-        _devices = get_devices()
-
-    icp(_devices)
-
-    for _ in _devices:
-        if command_hex:
-            _tx_bytes = bytes.fromhex(command_hex)
-            serial = SerialMinimal(
-                data_dir=data_dir,
-                log_serial_data=log_serial_data,
-                serial_port=_,
-                baud_rate=baud_rate,
-                default_timeout=timeout,
-            )
-
-            _bytes_written = serial.ser.write(_tx_bytes)
-            assert _bytes_written == len(_tx_bytes)
-            icp(_tx_bytes)
-            _expected_rx_bytes = bytes.fromhex(response_hex)
-            _bytes_read = serial.ser.readall()
-            icp(_bytes_read, _expected_rx_bytes)
-            if _bytes_read == _expected_rx_bytes:
-                output(_, reason=None, tty=tty, dict_output=False)
-                break  # bug more than one device may match
+    if _:
+        output(_, reason=None, tty=tty, dict_output=False)
 
 
 @cli.command("get-usb-ids")
