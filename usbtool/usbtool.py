@@ -115,7 +115,6 @@ def get_devices_for_usb_id(usb_id) -> list[str]:
     raise ValueError(usb_id)
 
 
-# @with_plugins(iter_entry_points('click_command_tree'))
 @click.group(context_settings=CONTEXT_SETTINGS, no_args_is_help=True, cls=AHGroup)
 @click_add_options(click_global_options)
 @click.pass_context
