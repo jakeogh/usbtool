@@ -122,10 +122,11 @@ def get_devices_for_usb_id(usb_id) -> list[Path]:
 
 
 def find_device(
-    command_hex: str,
-    response_hex: str,
+    *,
     baud_rate: int,
     timeout: int = 1,
+    command_hex: str | None = None,
+    response_hex: str | None = None,
     usb_id: str | None = None,
     serial_number: str | None = None,
     log_serial_data: bool = False,

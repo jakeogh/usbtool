@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import fastentrypoints
-from setuptools import find_packages, setup
+from setuptools import find_packages
+from setuptools import setup
 
-dependencies = ["click", 
-                "serialtool @ git+https://git@github.com/jakeogh/serialtool",
-                "timetool @ git+https://git@github.com/jakeogh/timetool",]
+import fastentrypoints
+
+dependencies = [
+    "click",
+    "asserttool @ git+https://git@github.com/jakeogh/asserttool",
+    "serialtool @ git+https://git@github.com/jakeogh/serialtool",
+    "timetool @ git+https://git@github.com/jakeogh/timetool",
+]
 
 config = {
     "version": "0.1",
@@ -16,8 +21,8 @@ config = {
     "author_email": "github.com@v6y.net",
     "description": "lookup usb tty device path by device id",
     "long_description": __doc__,
-    "packages": find_packages(exclude=['tests']),
-    "package_data": {"usbtool": ['py.typed']},
+    "packages": find_packages(exclude=["tests"]),
+    "package_data": {"usbtool": ["py.typed"]},
     "include_package_data": True,
     "zip_safe": False,
     "platforms": "any",
