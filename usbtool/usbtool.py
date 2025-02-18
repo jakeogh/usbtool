@@ -36,6 +36,7 @@ import click
 import sh
 from asserttool import ic
 from asserttool import icp
+from asserttool import minone
 from click_auto_help import AHGroup
 from clicktool import CONTEXT_SETTINGS
 from clicktool import click_add_options
@@ -56,6 +57,17 @@ DATA_DIR = Path(os.path.expanduser("~")) / Path(".usbtool") / Path(get_year_mont
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def get_serial_number_for_device(device: Path) -> str:
+    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    _lines = _.splitlines()
+    for _l in _lines:
+        _l = _l.strip()
+        if _l.startswith("ATTRS{serial}=="):
+            serial = _l.split('"')[1]
+            return serial
+    raise ValueError(device)
+
+
 def get_usb_id_dict():
     ids = {}
     _ = sh.lsusb()
@@ -67,14 +79,14 @@ def get_usb_id_dict():
     return ids
 
 
-def get_usb_tty_device_list() -> tuple[str, ...]:
+def get_usb_tty_device_list() -> list[Path]:
     _bus_path = Path("/sys/bus/usb-serial/devices/")
-    _device_list = tuple(_bus_path.iterdir())
+    _device_list = [Path(_) for _ in _bus_path.iterdir()]
     return _device_list
 
 
-def get_usb_id_for_device(device) -> str:
-    _ = sh.udevadm("info", "-a", device.as_posix())
+def get_usb_id_for_device(device: Path) -> str:
+    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
     _lines = _.splitlines()
     for index, _l in enumerate(_lines):
         _l = _l.strip()
@@ -86,13 +98,13 @@ def get_usb_id_for_device(device) -> str:
     raise ValueError(device)
 
 
-def get_devices() -> list[str]:
+def get_devices() -> list[Path]:
     _tty_list = get_usb_tty_device_list()
-    _devices = [f"/dev/{_.name}" for _ in _tty_list]
+    _devices = [Path(f"/dev/{_.name}") for _ in _tty_list]
     return _devices
 
 
-def get_devices_for_usb_id(usb_id) -> list[str]:
+def get_devices_for_usb_id(usb_id) -> list[Path]:
     devices = []
     assert len(usb_id) == 9
     assert ":" in usb_id
@@ -102,7 +114,7 @@ def get_devices_for_usb_id(usb_id) -> list[str]:
     for _ in _device_list:
         _id = get_usb_id_for_device(_)
         if _id == usb_id:
-            devices.append(f"/dev/{_.name}")
+            devices.append(Path("/dev/{_.name}"))
 
     if devices:
         return devices
@@ -115,13 +127,17 @@ def find_device(
     baud_rate: int,
     timeout: int = 1,
     usb_id: str | None = None,
+    serial_number: str | None = None,
     log_serial_data: bool = False,
     data_dir: Path = DATA_DIR,
 ):
+
+    minone([command_hex, usb_id, serial_number])
+
     if command_hex:
         if not response_hex:
             raise ValueError(
-                "--command-hex requires that --response-hex also be specified."
+                "passing a command_hex argument requires that response_hex argument also be specified."
             )
 
     if usb_id:
@@ -129,30 +145,45 @@ def find_device(
     else:
         _devices = get_devices()
 
-    eprint(f"{_devices=}")
+    ic(_devices)
 
     for _ in _devices:
+        if serial_number:
+            try:
+                _serial_number = get_serial_number_for_device(_)
+                if _serial_number != serial_number:
+                    # serial does not match, go to next device
+                    continue
+            except AttributeError:
+                # device does not have a serial attribute, skip to next device
+                continue
+
         if command_hex:
             _tx_bytes = bytes.fromhex(command_hex)
-            serial = SerialMinimal(
+            serial_oracle = SerialMinimal(
                 data_dir=data_dir,
                 log_serial_data=log_serial_data,
-                serial_port=_,
+                serial_port=_.as_posix(),
                 baud_rate=baud_rate,
                 default_timeout=timeout,
             )
 
-            _bytes_written = serial.ser.write(_tx_bytes)
+            _bytes_written = serial_oracle.ser.write(_tx_bytes)
             assert _bytes_written == len(_tx_bytes)
             eprint(f"{_tx_bytes=}")
             _expected_rx_bytes = bytes.fromhex(response_hex)
-            _bytes_read = serial.ser.readall()
+            _bytes_read = serial_oracle.ser.readall()
             eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
-            if _bytes_read == _expected_rx_bytes:
-                return _
+            if _bytes_read != _expected_rx_bytes:
+                # not a match, skip to next
                 # bug more than one device may match
+                continue
+
+        # all checks passed, found the correct device
+        return _
+
     raise ValueError(
-        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=}, {timeout=}"
+        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {timeout=}"
     )
 
 
@@ -226,9 +257,10 @@ def _get_devices_for_usb_id(
 
 
 @cli.command("find-device")
-@click.argument("command_hex", type=str)
-@click.argument("response_hex", type=str)
+@click.option("--command-hex", type=str)
+@click.option("--response-hex", type=str)
 @click.option("--usb-id")
+@click.option("--serial-number")
 @click.option(
     "--data-dir",
     type=click.Path(
@@ -248,6 +280,7 @@ def _get_devices_for_usb_id(
 def _find_device(
     ctx,
     usb_id: str,
+    serial_number: str,
     data_dir: Path,
     command_hex: str,
     response_hex: str,
@@ -267,18 +300,25 @@ def _find_device(
         gvd=gvd,
     )
 
+    if command_hex:
+        if not response_hex:
+            raise ValueError(
+                f"{command_hex=} requires --response-hex to be specified as well."
+            )
+
     _ = find_device(
         command_hex=command_hex,
         response_hex=response_hex,
         baud_rate=baud_rate,
         timeout=timeout,
         usb_id=usb_id,
+        serial_number=serial_number,
         log_serial_data=log_serial_data,
         data_dir=data_dir,
     )
 
     if _:
-        output(_, reason=None, tty=tty, dict_output=False)
+        output(_.as_posix(), reason=None, tty=tty, dict_output=False)
 
 
 @cli.command("get-usb-ids")

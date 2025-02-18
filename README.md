@@ -13,11 +13,14 @@
 ### Examples:
 ```
 $ usbtool find-device --help
-Usage: usbtool find-device [OPTIONS] COMMAND_HEX RESPONSE_HEX
+Usage: usbtool find-device [OPTIONS]
 
 Options:
+  --command-hex TEXT
+  --response-hex TEXT
   --usb-id TEXT
-  --data-dir DIRECTORY  [default: /home/user/.usbtool/2025_01_30]
+  --serial-number TEXT
+  --data-dir DIRECTORY  [default: /home/user/.usbtool/2025_02_18]
   --baud-rate INTEGER   [default: 9600]
   --log-serial-data
   --timeout INTEGER     [default: 1]
@@ -26,8 +29,8 @@ Options:
   --verbose-inf
   --help                Show this message and exit.
 
-$ usbtool find-device --baud-rate 921600 100253411003 065341
-_devices=['/dev/ttyUSB1', '/dev/ttyUSB0']
+$ usbtool find-device --baud-rate 921600 --command-hex 100253411003 --response-hex 065341
+_devices=[PosixPath('/dev/ttyUSB1'), PosixPath('/dev/ttyUSB0')]
 serial_url='spy:///dev/ttyUSB1?file=/dev/null'
 _tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'' _expected_rx_bytes=b'\x06SA'
@@ -35,4 +38,7 @@ serial_url='spy:///dev/ttyUSB0?file=/dev/null'
 _tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'\x06SA' _expected_rx_bytes=b'\x06SA'
 ¬/dev/ttyUSB0
+$ usbtool find-device --serial-number DA1ZDECW
+_devices=[PosixPath('/dev/ttyUSB1'), PosixPath('/dev/ttyUSB0')]
+¬/dev/ttyUSB1
 ```
