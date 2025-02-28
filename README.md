@@ -39,6 +39,42 @@ _tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'\x06SA' _expected_rx_bytes=b'\x06SA'
 ¬/dev/ttyUSB0
 $ usbtool find-device --serial-number DA1ZDECW
+ic| 1740777124.159 8627 usbtool:8<click>â†’ /usbtool.py:347,179,67@ get_attributes():61- e: ErrorReturnCode_1('
+
+  RAN: /usr/bin/udevadm info --attribute-walk /dev/ttyACM0
+
+  STDOUT:
+
+
+  STDERR:
+Unknown device "/dev/ttyACM0": No such device
+')
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 59, in get_attributes
+    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/sh.py", line 1511, in __call__
+    rc = self.__class__.RunningCommandCls(cmd, call_args, stdin, stdout, stderr)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/sh.py", line 734, in __init__
+    self.wait()
+  File "/usr/lib/python3.12/site-packages/sh.py", line 796, in wait
+    self.handle_command_exit_code(exit_code)
+  File "/usr/lib/python3.12/site-packages/sh.py", line 823, in handle_command_exit_code
+    raise exc
+sh.ErrorReturnCode_1: 
+
+  RAN: /usr/bin/udevadm info --attribute-walk /dev/ttyACM0
+
+  STDOUT:
+
+
+  STDERR:
+Unknown device "/dev/ttyACM0": No such device
+
+
+During handling of the above exception, another exception occurred:
+
 Traceback (most recent call last):
   File "/usr/lib/python-exec/python3.12/usbtool", line 8, in <module>
     sys.exit(cli())
@@ -61,33 +97,17 @@ Traceback (most recent call last):
   File "/usr/lib/python3.12/site-packages/click/decorators.py", line 33, in new_func
     return f(get_current_context(), *args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 337, in _find_device
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 347, in _find_device
     _ = find_device(
         ^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 169, in find_device
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 179, in find_device
     _serial_number = get_serial_number_for_device(_)
                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 58, in get_serial_number_for_device
-    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/sh.py", line 1511, in __call__
-    rc = self.__class__.RunningCommandCls(cmd, call_args, stdin, stdout, stderr)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/sh.py", line 734, in __init__
-    self.wait()
-  File "/usr/lib/python3.12/site-packages/sh.py", line 796, in wait
-    self.handle_command_exit_code(exit_code)
-  File "/usr/lib/python3.12/site-packages/sh.py", line 823, in handle_command_exit_code
-    raise exc
-sh.ErrorReturnCode_1: 
-
-  RAN: /usr/bin/udevadm info --attribute-walk /dev/ttyACM0
-
-  STDOUT:
-
-
-  STDERR:
-Unknown device "/dev/ttyACM0": No such device
-
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 67, in get_serial_number_for_device
+    _ = get_attributes(device)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 62, in get_attributes
+    raise ValueError(device)
+ValueError: /dev/ttyACM0
 
 ```

@@ -106,11 +106,11 @@ def get_usb_tty_device_list() -> list[Path]:
     _device_list.append(Path("/dev/ttyACM2"))
     _device_list.append(Path("/dev/ttyACM3"))
     _ = [_ for _ in _device_list if _.exists()]
-    return _device_list
+    return _
 
 
 def get_usb_id_for_device(device: Path) -> str:
-    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    _ = get_attributes(device)
     _lines = _.splitlines()
     for index, _l in enumerate(_lines):
         _l = _l.strip()
