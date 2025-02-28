@@ -90,6 +90,7 @@ def get_usb_id_dict():
 def get_usb_tty_device_list() -> list[Path]:
     _bus_path = Path("/sys/bus/usb-serial/devices/")
     _device_list = [Path(_) for _ in _bus_path.iterdir()]
+    icp(_device_list)
     return _device_list
 
 
@@ -203,7 +204,7 @@ def find_device(
         return _
 
     raise ValueError(
-        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {timeout=}"
+        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {manufacturer=} {timeout=}"
     )
 
 
