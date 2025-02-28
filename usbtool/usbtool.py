@@ -90,7 +90,12 @@ def get_usb_id_dict():
 def get_usb_tty_device_list() -> list[Path]:
     _bus_path = Path("/sys/bus/usb-serial/devices/")
     _device_list = [Path(_) for _ in _bus_path.iterdir()]
-    icp(_device_list)
+    # icp(_device_list)
+    # ugly temp hack
+    _device_list.append(Path("/dev/ttyACM0"))
+    _device_list.append(Path("/dev/ttyACM1"))
+    _device_list.append(Path("/dev/ttyACM2"))
+    _device_list.append(Path("/dev/ttyACM3"))
     return _device_list
 
 
