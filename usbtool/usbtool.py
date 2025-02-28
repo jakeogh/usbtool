@@ -48,9 +48,6 @@ from mptool import output
 from serialtool import SerialMinimal
 from timetool import get_year_month_day
 
-sh.mv = None  # use sh.busybox('mv'), coreutils ignores stdin read errors
-
-
 signal(SIGPIPE, SIG_DFL)
 
 DATA_DIR = Path(os.path.expanduser("~")) / Path(".usbtool") / Path(get_year_month_day())
