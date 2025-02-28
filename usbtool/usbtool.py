@@ -145,7 +145,7 @@ def find_device(
     data_dir: Path = DATA_DIR,
 ):
 
-    minone([command_hex, usb_id, serial_number])
+    minone([command_hex, usb_id, serial_number, manufacturer])
 
     if command_hex:
         if not response_hex:
