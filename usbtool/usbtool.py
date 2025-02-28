@@ -68,6 +68,17 @@ def get_serial_number_for_device(device: Path) -> str:
     raise ValueError(device)
 
 
+def get_manufacturer_for_device(device: Path) -> str:
+    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    _lines = _.splitlines()
+    for _l in _lines:
+        _l = _l.strip()
+        if _l.startswith("ATTRS{manufacturer}=="):
+            mfg = _l.split('"')[1]
+            return mfg
+    raise ValueError(device)
+
+
 def get_usb_id_dict():
     ids = {}
     _ = sh.lsusb()
@@ -129,6 +140,7 @@ def find_device(
     response_hex: str | None = None,
     usb_id: str | None = None,
     serial_number: str | None = None,
+    manufacturer: str | None = None,
     log_serial_data: bool = False,
     data_dir: Path = DATA_DIR,
 ):
@@ -157,6 +169,16 @@ def find_device(
                     continue
             except AttributeError:
                 # device does not have a serial attribute, skip to next device
+                continue
+
+        if manufacturer:
+            try:
+                _manufacturer = get_manufacturer_for_device(_)
+                if _manufacturer != manufacturer:
+                    # manufacturer does not match, go to next device
+                    continue
+            except AttributeError:
+                # device does not have a manufacturer attribute, skip to next device
                 continue
 
         if command_hex:
@@ -262,6 +284,7 @@ def _get_devices_for_usb_id(
 @click.option("--response-hex", type=str)
 @click.option("--usb-id")
 @click.option("--serial-number")
+@click.option("--manufacturer")
 @click.option(
     "--data-dir",
     type=click.Path(
@@ -282,6 +305,7 @@ def _find_device(
     ctx,
     usb_id: str,
     serial_number: str,
+    manufacturer: str,
     data_dir: Path,
     command_hex: str,
     response_hex: str,
@@ -314,6 +338,7 @@ def _find_device(
         timeout=timeout,
         usb_id=usb_id,
         serial_number=serial_number,
+        manufacturer=manufacturer,
         log_serial_data=log_serial_data,
         data_dir=data_dir,
     )
