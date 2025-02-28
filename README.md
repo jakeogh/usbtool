@@ -31,7 +31,6 @@ Options:
   --help                Show this message and exit.
 
 $ usbtool find-device --baud-rate 921600 --command-hex 100253411003 --response-hex 065341
-ic| 1740776627.985 31030 usbtool:8<click>→ /usbtool.py:332,157,111@ get_usb_tty_device_list():93- _device_list: [PosixPath('/sys/bus/usb-serial/devices/ttyUSB1'), PosixPath('/sys/bus/usb-serial/devices/ttyUSB0')]
 serial_url='spy:///dev/ttyUSB1?file=/dev/null'
 _tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'' _expected_rx_bytes=b'\x06SA'
@@ -40,7 +39,6 @@ _tx_bytes=b'\x10\x02SA\x10\x03'
 _bytes_read=b'\x06SA' _expected_rx_bytes=b'\x06SA'
 �/dev/ttyUSB0
 $ usbtool find-device --serial-number DA1ZDECW
-ic| 1740776634.401 31032 usbtool:8<click>→ /usbtool.py:332,157,111@ get_usb_tty_device_list():93- _device_list: [PosixPath('/sys/bus/usb-serial/devices/ttyUSB1'), PosixPath('/sys/bus/usb-serial/devices/ttyUSB0')]
 Traceback (most recent call last):
   File "/usr/lib/python-exec/python3.12/usbtool", line 8, in <module>
     sys.exit(cli())
@@ -63,11 +61,33 @@ Traceback (most recent call last):
   File "/usr/lib/python3.12/site-packages/click/decorators.py", line 33, in new_func
     return f(get_current_context(), *args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 332, in _find_device
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 337, in _find_device
     _ = find_device(
         ^^^^^^^^^^^^
-  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 206, in find_device
-    raise ValueError(
-ValueError: Error: No matching device found for command_hex=None response_hex=None baud_rate=9600 usb_id=None serial_number='DA1ZDECW' manufacturer=None timeout=1
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 169, in find_device
+    _serial_number = get_serial_number_for_device(_)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 58, in get_serial_number_for_device
+    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/sh.py", line 1511, in __call__
+    rc = self.__class__.RunningCommandCls(cmd, call_args, stdin, stdout, stderr)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/sh.py", line 734, in __init__
+    self.wait()
+  File "/usr/lib/python3.12/site-packages/sh.py", line 796, in wait
+    self.handle_command_exit_code(exit_code)
+  File "/usr/lib/python3.12/site-packages/sh.py", line 823, in handle_command_exit_code
+    raise exc
+sh.ErrorReturnCode_1: 
+
+  RAN: /usr/bin/udevadm info --attribute-walk /dev/ttyACM0
+
+  STDOUT:
+
+
+  STDERR:
+Unknown device "/dev/ttyACM0": No such device
+
 
 ```

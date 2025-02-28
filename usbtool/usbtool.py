@@ -54,8 +54,17 @@ DATA_DIR = Path(os.path.expanduser("~")) / Path(".usbtool") / Path(get_year_mont
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def get_attributes(device: Path) -> str:
+    try:
+        _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    except sh.ErrorReturnCode_1 as e:
+        icp(e)
+        raise ValueError(device)
+    return _
+
+
 def get_serial_number_for_device(device: Path) -> str:
-    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    _ = get_attributes(device)
     _lines = _.splitlines()
     for _l in _lines:
         _l = _l.strip()
@@ -66,7 +75,7 @@ def get_serial_number_for_device(device: Path) -> str:
 
 
 def get_manufacturer_for_device(device: Path) -> str:
-    _ = sh.udevadm("info", "--attribute-walk", device.as_posix())
+    _ = get_attributes(device)
     _lines = _.splitlines()
     for _l in _lines:
         _l = _l.strip()
@@ -96,6 +105,7 @@ def get_usb_tty_device_list() -> list[Path]:
     _device_list.append(Path("/dev/ttyACM1"))
     _device_list.append(Path("/dev/ttyACM2"))
     _device_list.append(Path("/dev/ttyACM3"))
+    _ = [_ for _ in _device_list if _.exists()]
     return _device_list
 
 
