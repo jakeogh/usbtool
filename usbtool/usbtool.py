@@ -104,7 +104,8 @@ def get_usb_tty_device_list() -> list[Path]:
         for _ in Path("/dev/").iterdir()
         if _.as_posix().startswith("/dev/ttyACM")
     ]
-    # icp(_device_list)
+    ic(_device_list)
+    ic(_acm_device_list)
     # ugly temp hack
     # _device_list.append(Path("/dev/ttyACM0"))
     # _device_list.append(Path("/dev/ttyACM1"))
