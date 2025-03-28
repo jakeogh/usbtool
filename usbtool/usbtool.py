@@ -203,13 +203,20 @@ def find_device(
 
         if command_hex:
             _tx_bytes = bytes.fromhex(command_hex)
-            serial_oracle = SerialMinimal(
-                data_dir=data_dir,
-                log_serial_data=log_serial_data,
-                serial_port=_.as_posix(),
-                baud_rate=baud_rate,
-                default_timeout=timeout,
-            )
+            try:
+                serial_oracle = SerialMinimal(
+                    data_dir=data_dir,
+                    log_serial_data=log_serial_data,
+                    serial_port=_.as_posix(),
+                    baud_rate=baud_rate,
+                    default_timeout=timeout,
+                )
+            except PermissionError as e:
+                ic(e)
+                eprint(
+                    "ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
+                )
+                continue
 
             _bytes_written = serial_oracle.ser.write(_tx_bytes)
             assert _bytes_written == len(_tx_bytes)
