@@ -20,7 +20,8 @@ Options:
   --response-hex TEXT
   --usb-id TEXT
   --serial-number TEXT
-  --data-dir DIRECTORY  [default: /home/user/.usbtool/2025_02_18]
+  --manufacturer TEXT
+  --data-dir DIRECTORY  [default: /home/user/.usbtool/2025_04_10]
   --baud-rate INTEGER   [default: 9600]
   --log-serial-data
   --timeout INTEGER     [default: 1]
@@ -30,13 +31,66 @@ Options:
   --help                Show this message and exit.
 
 $ usbtool find-device --baud-rate 921600 --command-hex 100253411003 --response-hex 065341
-serial_url='spy:///dev/ttyUSB1?file=/dev/null'
-_tx_bytes=b'\x10\x02SA\x10\x03'
-_bytes_read=b'' _expected_rx_bytes=b'\x06SA'
 serial_url='spy:///dev/ttyUSB0?file=/dev/null'
 _tx_bytes=b'\x10\x02SA\x10\x03'
-_bytes_read=b'\x06SA' _expected_rx_bytes=b'\x06SA'
-¬/dev/ttyUSB0
-$ usbtool find-device --serial-number DA1ZDECW
-¬/dev/ttyUSB1
+_bytes_read=b'' _expected_rx_bytes=b'\x06SA'
+Traceback (most recent call last):
+  File "/usr/lib/python-exec/python3.12/usbtool", line 8, in <module>
+    sys.exit(cli())
+             ^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1697, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/decorators.py", line 33, in new_func
+    return f(get_current_context(), *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 361, in _find_device
+    _ = find_device(
+        ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 235, in find_device
+    raise ValueError(
+ValueError: Error: No matching device found for command_hex='100253411003' response_hex='065341' baud_rate=921600 usb_id=None serial_number=None manufacturer=None timeout=1
+
+$ usbtool find-device --serial-number FT7E7CA6
+Traceback (most recent call last):
+  File "/usr/lib/python-exec/python3.12/usbtool", line 8, in <module>
+    sys.exit(cli())
+             ^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1161, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1082, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1697, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 1443, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/core.py", line 788, in invoke
+    return __callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/click/decorators.py", line 33, in new_func
+    return f(get_current_context(), *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 361, in _find_device
+    _ = find_device(
+        ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/site-packages/usbtool/usbtool.py", line 235, in find_device
+    raise ValueError(
+ValueError: Error: No matching device found for command_hex=None response_hex=None baud_rate=9600 usb_id=None serial_number='FT7E7CA6' manufacturer=None timeout=1
+
 ```
