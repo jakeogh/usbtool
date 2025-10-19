@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "usbtool"
-version = "0.0.1760866801"
+version = "0.0.1760909873"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -23,10 +23,8 @@ dependencies = [
     "sh",
     "timetool @ git+https://github.com/jakeogh/timetool",
 ]
+license = "ISC"
 requires-python = ">=3.11"
-
-[project.license]
-text = "ISC"
 
 [project.urls]
 Homepage = "https://github.com/jakeogh/usbtool"
