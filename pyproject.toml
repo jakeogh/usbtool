@@ -1,0 +1,49 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usbtool"
+version = "0.0.1760866801"
+description = "lookup usb tty device path by device id"
+authors = [
+    { name = "Justin Keogh", email = "github.com@v6y.net" },
+]
+dependencies = [
+    "asserttool @ git+https://github.com/jakeogh/asserttool",
+    "click",
+    "click-auto-help @ git+https://github.com/jakeogh/click-auto-help",
+    "clicktool @ git+https://github.com/jakeogh/clicktool",
+    "eprint @ git+https://github.com/jakeogh/eprint",
+    "globalverbose @ git+https://github.com/jakeogh/globalverbose",
+    "mptool @ git+https://github.com/jakeogh/mptool",
+    "serialtool @ git+https://github.com/jakeogh/serialtool",
+    "sh",
+    "timetool @ git+https://github.com/jakeogh/timetool",
+]
+requires-python = ">=3.11"
+
+[project.license]
+text = "ISC"
+
+[project.urls]
+Homepage = "https://github.com/jakeogh/usbtool"
+
+[project.scripts]
+usbtool = "usbtool.usbtool:cli"
+
+[tool.setuptools]
+include-package-data = true
+zip-safe = false
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests",
+]
+
+[tool.setuptools.package-data]
+usbtool = [
+    "py.typed",
+]
