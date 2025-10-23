@@ -5,7 +5,7 @@ backend-path = ["."]
 
 [project]
 name = "usbtool"
-version = "0.0.1761212624"
+version = "0.0.1761212641"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
