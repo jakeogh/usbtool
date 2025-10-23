@@ -5,7 +5,7 @@ backend-path = ["."]
 
 [project]
 name = "usbtool"
-version = "0.0.1761212426"
+version = "0.0.1761212624"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -36,7 +36,7 @@ usbtool = [
 ]
 
 [tool.pep508-url-version-backend]
-dependencies-indexed = []
+dependencies-indexed = ["asserttool>=0.0.1761033057", "click-auto-help>=0.0.1761041641", "clicktool>=0.0.1761033403", "eprint>=0.0.1761027667", "globalverbose>=0.0.1761031290", "mptool>=0.0.1761032167", "serialtool>=0.0.1761035129", "sh", "timetool>=0.0.1761032704"]
 dependencies-git = [
 	"asserttool @ git+https://github.com/jakeogh/asserttool", 
 	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
@@ -45,6 +45,6 @@ dependencies-git = [
 	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
 	"mptool @ git+https://github.com/jakeogh/mptool", 
 	"serialtool @ git+https://github.com/jakeogh/serialtool", 
-	"sh", 
+	"sh",
 	"timetool @ git+https://github.com/jakeogh/timetool"]
 index-urls = ["jakeogh.github.io", "pip-index"]
