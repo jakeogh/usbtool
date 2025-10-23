@@ -1,27 +1,16 @@
 [build-system]
-requires = [
-    "setuptools>=61.0",
-]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0", "tomlkit"]
+build-backend = "pep508_url_version_backend"
+backend-path = ["."]
 
 [project]
 name = "usbtool"
-version = "0.0.1760909873"
+version = "0.0.1761212426"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
 dependencies = [
-    "asserttool @ git+https://github.com/jakeogh/asserttool",
-    "click",
-    "click-auto-help @ git+https://github.com/jakeogh/click-auto-help",
-    "clicktool @ git+https://github.com/jakeogh/clicktool",
-    "eprint @ git+https://github.com/jakeogh/eprint",
-    "globalverbose @ git+https://github.com/jakeogh/globalverbose",
-    "mptool @ git+https://github.com/jakeogh/mptool",
-    "serialtool @ git+https://github.com/jakeogh/serialtool",
-    "sh",
-    "timetool @ git+https://github.com/jakeogh/timetool",
 ]
 license = "ISC"
 requires-python = ">=3.11"
@@ -45,3 +34,17 @@ exclude = [
 usbtool = [
     "py.typed",
 ]
+
+[tool.pep508-url-version-backend]
+dependencies-indexed = []
+dependencies-git = [
+	"asserttool @ git+https://github.com/jakeogh/asserttool", 
+	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
+	"clicktool @ git+https://github.com/jakeogh/clicktool", 
+	"eprint @ git+https://github.com/jakeogh/eprint", 
+	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
+	"mptool @ git+https://github.com/jakeogh/mptool", 
+	"serialtool @ git+https://github.com/jakeogh/serialtool", 
+	"sh", 
+	"timetool @ git+https://github.com/jakeogh/timetool"]
+index-urls = ["jakeogh.github.io", "pip-index"]
