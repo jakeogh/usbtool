@@ -152,7 +152,7 @@ def find_device(
     else:
         _devices = get_devices()
 
-    ic(_devices)
+    icp(_devices)
 
     for _ in _devices:
         if serial_number:
@@ -204,6 +204,7 @@ def find_device(
                 continue
 
         # all checks passed, found the correct device
+        icp(_)
         return _
 
     raise ValueError(
