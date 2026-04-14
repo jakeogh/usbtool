@@ -119,7 +119,7 @@ def get_devices_for_usb_id(usb_id) -> list[Path]:
     for _ in _device_list:
         _id = get_usb_id_for_device(_)
         if _id == usb_id:
-            devices.append(Path("/dev/{_.name}"))
+            devices.append(Path(f"/dev/{_.name}"))
 
     if devices:
         return devices
@@ -161,7 +161,7 @@ def find_device(
                 if _serial_number != serial_number:
                     # serial does not match, go to next device
                     continue
-            except AttributeError:
+            except ValueError:
                 # device does not have a serial attribute, skip to next device
                 continue
 
@@ -171,12 +171,13 @@ def find_device(
                 if _manufacturer != manufacturer:
                     # manufacturer does not match, go to next device
                     continue
-            except AttributeError:
+            except ValueError:
                 # device does not have a manufacturer attribute, skip to next device
                 continue
 
         if command_hex:
             _tx_bytes = bytes.fromhex(command_hex)
+            _expected_rx_bytes = bytes.fromhex(response_hex)
             try:
                 serial_oracle = SerialMinimal(
                     data_dir=data_dir,
@@ -188,20 +189,36 @@ def find_device(
             except PermissionError as e:
                 ic(e)
                 eprint(
-                    "ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
+                    f"ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
                 )
                 continue
 
-            _bytes_written = serial_oracle.ser.write(_tx_bytes)
-            assert _bytes_written == len(_tx_bytes)
-            eprint(f"{_tx_bytes=}")
-            _expected_rx_bytes = bytes.fromhex(response_hex)
-            _bytes_read = serial_oracle.ser.readall()
-            eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
-            if _bytes_read != _expected_rx_bytes:
-                # not a match, skip to next
-                # bug more than one device may match
-                continue
+            try:
+                # Flush stale bytes left over from prior probes / device boot chatter
+                try:
+                    serial_oracle.ser.reset_input_buffer()
+                    serial_oracle.ser.reset_output_buffer()
+                except Exception as e:
+                    ic(e)
+
+                _bytes_written = serial_oracle.ser.write(_tx_bytes)
+                serial_oracle.ser.flush()
+                assert _bytes_written == len(_tx_bytes)
+                eprint(f"{_tx_bytes=}")
+
+                # Sized read returns as soon as N bytes arrive (or timeout),
+                # instead of waiting the full timeout like readall() does.
+                _bytes_read = serial_oracle.ser.read(len(_expected_rx_bytes))
+                eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
+                if _bytes_read != _expected_rx_bytes:
+                    # not a match, skip to next
+                    # bug more than one device may match
+                    continue
+            finally:
+                try:
+                    serial_oracle.ser.close()
+                except Exception as e:
+                    ic(e)
 
         # all checks passed, found the correct device
         icp(_)
