@@ -152,7 +152,18 @@ def find_device(
     else:
         _devices = get_devices()
 
-    icp(_devices)
+    icp(
+        _devices,
+        baud_rate,
+        timeout,
+        command_hex,
+        response_hex,
+        usb_id,
+        serial_number,
+        manufacturer,
+        log_serial_data,
+        data_dir,
+    )
 
     for _ in _devices:
         if serial_number:
