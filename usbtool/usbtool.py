@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from pathlib import Path
 from signal import SIG_DFL
 from signal import SIGPIPE
@@ -137,6 +138,8 @@ def find_device(
     manufacturer: str | None = None,
     log_serial_data: bool = False,
     data_dir: Path = DATA_DIR,
+    tries: int = 1,
+    retry_delay: float = 0.5,
 ):
 
     minone([command_hex, usb_id, serial_number, manufacturer])
@@ -163,80 +166,87 @@ def find_device(
         manufacturer,
         log_serial_data,
         data_dir,
+        tries,
+        retry_delay,
     )
 
-    for _ in _devices:
-        if serial_number:
-            try:
-                _serial_number = get_serial_number_for_device(_)
-                if _serial_number != serial_number:
-                    # serial does not match, go to next device
-                    continue
-            except ValueError:
-                # device does not have a serial attribute, skip to next device
-                continue
+    for attempt in range(1, tries + 1):
+        if attempt > 1:
+            eprint(f"find_device: attempt {attempt}/{tries}")
+            time.sleep(retry_delay)
 
-        if manufacturer:
-            try:
-                _manufacturer = get_manufacturer_for_device(_)
-                if _manufacturer != manufacturer:
-                    # manufacturer does not match, go to next device
-                    continue
-            except ValueError:
-                # device does not have a manufacturer attribute, skip to next device
-                continue
-
-        if command_hex:
-            _tx_bytes = bytes.fromhex(command_hex)
-            _expected_rx_bytes = bytes.fromhex(response_hex)
-            try:
-                serial_oracle = SerialMinimal(
-                    data_dir=data_dir,
-                    log_serial_data=log_serial_data,
-                    serial_port=_.as_posix(),
-                    baud_rate=baud_rate,
-                    default_timeout=timeout,
-                )
-            except PermissionError as e:
-                ic(e)
-                eprint(
-                    f"ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
-                )
-                continue
-
-            try:
-                # Flush stale bytes left over from prior probes / device boot chatter
+        for _ in _devices:
+            if serial_number:
                 try:
-                    serial_oracle.ser.reset_input_buffer()
-                    serial_oracle.ser.reset_output_buffer()
-                except Exception as e:
-                    ic(e)
-
-                _bytes_written = serial_oracle.ser.write(_tx_bytes)
-                serial_oracle.ser.flush()
-                assert _bytes_written == len(_tx_bytes)
-                eprint(f"{_tx_bytes=}")
-
-                # Sized read returns as soon as N bytes arrive (or timeout),
-                # instead of waiting the full timeout like readall() does.
-                _bytes_read = serial_oracle.ser.read(len(_expected_rx_bytes))
-                eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
-                if _bytes_read != _expected_rx_bytes:
-                    # not a match, skip to next
-                    # bug more than one device may match
+                    _serial_number = get_serial_number_for_device(_)
+                    if _serial_number != serial_number:
+                        # serial does not match, go to next device
+                        continue
+                except ValueError:
+                    # device does not have a serial attribute, skip to next device
                     continue
-            finally:
-                try:
-                    serial_oracle.ser.close()
-                except Exception as e:
-                    ic(e)
 
-        # all checks passed, found the correct device
-        icp(_)
-        return _
+            if manufacturer:
+                try:
+                    _manufacturer = get_manufacturer_for_device(_)
+                    if _manufacturer != manufacturer:
+                        # manufacturer does not match, go to next device
+                        continue
+                except ValueError:
+                    # device does not have a manufacturer attribute, skip to next device
+                    continue
+
+            if command_hex:
+                _tx_bytes = bytes.fromhex(command_hex)
+                _expected_rx_bytes = bytes.fromhex(response_hex)
+                try:
+                    serial_oracle = SerialMinimal(
+                        data_dir=data_dir,
+                        log_serial_data=log_serial_data,
+                        serial_port=_.as_posix(),
+                        baud_rate=baud_rate,
+                        default_timeout=timeout,
+                    )
+                except PermissionError as e:
+                    ic(e)
+                    eprint(
+                        f"ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
+                    )
+                    continue
+
+                try:
+                    # Flush stale bytes left over from prior probes / device boot chatter
+                    try:
+                        serial_oracle.ser.reset_input_buffer()
+                        serial_oracle.ser.reset_output_buffer()
+                    except Exception as e:
+                        ic(e)
+
+                    _bytes_written = serial_oracle.ser.write(_tx_bytes)
+                    serial_oracle.ser.flush()
+                    assert _bytes_written == len(_tx_bytes)
+                    eprint(f"{_tx_bytes=}")
+
+                    # Sized read returns as soon as N bytes arrive (or timeout),
+                    # instead of waiting the full timeout like readall() does.
+                    _bytes_read = serial_oracle.ser.read(len(_expected_rx_bytes))
+                    eprint(f"{_bytes_read=}", f"{_expected_rx_bytes=}")
+                    if _bytes_read != _expected_rx_bytes:
+                        # not a match, skip to next
+                        # bug more than one device may match
+                        continue
+                finally:
+                    try:
+                        serial_oracle.ser.close()
+                    except Exception as e:
+                        ic(e)
+
+            # all checks passed, found the correct device
+            icp(_)
+            return _
 
     raise ValueError(
-        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {manufacturer=} {timeout=}"
+        f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {manufacturer=} {timeout=} {tries=} {retry_delay=}"
     )
 
 
@@ -339,6 +349,8 @@ def _get_devices_for_usb_id(
 @click.option("--baud-rate", type=int, default=9600)
 @click.option("--log-serial-data", is_flag=True)
 @click.option("--timeout", type=int, default=1)
+@click.option("--tries", type=int, default=1)
+@click.option("--retry-delay", type=float, default=0.5)
 @click_add_options(click_global_options)
 @click.pass_context
 def _find_device(
@@ -352,6 +364,8 @@ def _find_device(
     baud_rate: int,
     log_serial_data: bool,
     timeout: int,
+    tries: int,
+    retry_delay: float,
     verbose_inf: bool,
     dict_output: bool,
     verbose: bool = False,
@@ -381,6 +395,8 @@ def _find_device(
         manufacturer=manufacturer,
         log_serial_data=log_serial_data,
         data_dir=data_dir,
+        tries=tries,
+        retry_delay=retry_delay,
     )
 
     if _:
