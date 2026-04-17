@@ -219,6 +219,7 @@ def find_device(
                     eprint(
                         f"ERROR: SerialException on port {_.as_posix()} (Skipped searching this port, likely in use)"
                     )
+                    continue
 
 
                 try:
