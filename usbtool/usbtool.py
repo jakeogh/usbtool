@@ -28,6 +28,7 @@ from globalverbose import gvd
 from mptool import output
 from serialtool import SerialMinimal
 from timetool import get_year_month_day
+from serial.serialutil import SerialException
 
 signal(SIGPIPE, SIG_DFL)
 
@@ -213,6 +214,12 @@ def find_device(
                         f"ERROR: PermissionError on port {_.as_posix()} (Skipped searching this port)"
                     )
                     continue
+                except SerialException as e:
+                    ic(e)
+                    eprint(
+                        f"ERROR: SerialException on port {_.as_posix()} (Skipped searching this port, likely in use)"
+                    )
+
 
                 try:
                     # Flush stale bytes left over from prior probes / device boot chatter
