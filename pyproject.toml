@@ -1,16 +1,24 @@
 [build-system]
-requires = ["setuptools>=61.0", "tomlkit"]
-build-backend = "pep508_url_version_backend"
-backend-path = ["."]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "usbtool"
-version = "1!0.0.1785931806"
+version = "1!0.0.1787109881"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
 ]
 dependencies = [
+    "sh",
+    "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
+    "click-auto-help @ git+https://github.com/jakeogh/click-auto-help@c53f57c78529a51ae9b03f579d7ee6f2d63ca03a",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@a9894f9d3a06701c5f73cd8b2794028042c9b420",
+    "eprint @ git+https://github.com/jakeogh/eprint@6ee1deca0c24b684eb5093247d6bd22e11f1b057",
+    "globalverbose @ git+https://github.com/jakeogh/globalverbose@59abc758c18c0b85e9e61c1e14e5a64a81bb220e",
+    "mptool @ git+https://github.com/jakeogh/mptool@a8579325a458cc33c6a212685aa50e16a457ccf6",
+    "serialtool @ git+https://github.com/jakeogh/serialtool@06cada1fbbb689623996681cb3f21ee0bec16c21",
+    "timetool @ git+https://github.com/jakeogh/timetool@41dcc2f92afb23fdf0a255a1f727befac65bed3e",
 ]
 license = "ISC"
 requires-python = ">=3.11"
@@ -35,16 +43,3 @@ usbtool = [
     "py.typed",
 ]
 
-[tool.pep508-url-version-backend]
-dependencies-indexed = ["asserttool>=1!0.0.1785542140", "click-auto-help>=1!0.0.1784680961", "clicktool>=1!0.0.1785930957", "eprint>=1!0.0.1784682565", "globalverbose>=1!0.0.1784686617", "mptool>=1!0.0.1784691460", "serialtool>=1!0.0.1785931730", "sh", "timetool>=1!0.0.1785931790"]
-dependencies-git = [
-	"asserttool @ git+https://github.com/jakeogh/asserttool", 
-	"click-auto-help @ git+https://github.com/jakeogh/click-auto-help", 
-	"clicktool @ git+https://github.com/jakeogh/clicktool", 
-	"eprint @ git+https://github.com/jakeogh/eprint", 
-	"globalverbose @ git+https://github.com/jakeogh/globalverbose", 
-	"mptool @ git+https://github.com/jakeogh/mptool", 
-	"serialtool @ git+https://github.com/jakeogh/serialtool", 
-	"sh",
-	"timetool @ git+https://github.com/jakeogh/timetool"]
-index-urls = ["jakeogh.github.io", "pip-index"]
