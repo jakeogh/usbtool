@@ -22,10 +22,8 @@ from click_auto_help import AHGroup
 from clicktool import CONTEXT_SETTINGS
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tvicgvd
+from clicktool import tvic
 from eprint import eprint
-from globalverbose import gvd
-from mptool import output
 from serialtool import SerialMinimal
 from timetool import get_year_month_day
 from serial.serialutil import SerialException
@@ -268,12 +266,11 @@ def cli(
     verbose: bool = False,
 ) -> None:
 
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
     if verbose:
         logging.basicConfig(level=logging.INFO)
@@ -289,22 +286,16 @@ def list_usb_tty_devices(
     verbose: bool = False,
 ) -> None:
 
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     _device_list = get_usb_tty_device_list()
     for _ in _device_list:
-        output(
-            _.as_posix(),
-            reason=None,
-            tty=tty,
-            dict_output=False,
-        )
+        print(_.as_posix(), flush=True)
 
 
 @cli.command("get-devices-for-usb-id")
@@ -319,22 +310,16 @@ def _get_devices_for_usb_id(
     verbose: bool = False,
 ) -> None:
 
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     _devices = get_devices_for_usb_id(usb_id)
     for _ in _devices:
-        output(
-            _,
-            reason=None,
-            tty=tty,
-            dict_output=False,
-        )
+        print(_, flush=True)
 
 
 @cli.command("find-device")
@@ -379,12 +364,11 @@ def _find_device(
     verbose: bool = False,
 ) -> None:
 
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     if command_hex:
@@ -408,12 +392,7 @@ def _find_device(
     )
 
     if _:
-        output(
-            _.as_posix(),
-            reason=None,
-            tty=tty,
-            dict_output=False,
-        )
+        print(_.as_posix(), flush=True)
 
 
 @cli.command("get-usb-ids")
@@ -426,19 +405,13 @@ def _get_usb_ids(
     verbose: bool = False,
 ) -> None:
 
-    tty, verbose = tvicgvd(
+    _tty, verbose = tvic(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
         ic=ic,
-        gvd=gvd,
     )
 
     _ = get_usb_id_dict()
     for _id, _description in _.items():
-        output(
-            f"{_id} {_description}",
-            reason=None,
-            tty=tty,
-            dict_output=False,
-        )
+        print(f"{_id} {_description}", flush=True)
