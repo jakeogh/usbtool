@@ -139,7 +139,10 @@ def find_device(
     data_dir: Path = DATA_DIR,
     tries: int = 1,
     retry_delay: float = 0.5,
-):
+    required: bool = True,
+) -> Path | None:
+    """The device that answers, or, with required=False, None when none
+    does: for a caller that looks again later, absence is not an error."""
 
     minone([command_hex, usb_id, serial_number, manufacturer])
 
@@ -251,6 +254,8 @@ def find_device(
             icp(_)
             return _
 
+    if not required:
+        return None
     raise ValueError(
         f"Error: No matching device found for {command_hex=} {response_hex=} {baud_rate=} {usb_id=} {serial_number=} {manufacturer=} {timeout=} {tries=} {retry_delay=}"
     )
