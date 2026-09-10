@@ -77,8 +77,13 @@ def get_usb_id_dict():
 
 
 def get_usb_tty_device_list() -> list[Path]:
+    # the usb-serial bus appears when its module loads, which is when a USB
+    # serial adapter is first seen. A host that has never had one has no such
+    # directory, and that is no devices rather than a fault: raising here made
+    # every caller that asked whether a device was there fail instead of being
+    # told no.
     _bus_path = Path("/sys/bus/usb-serial/devices/")
-    _device_list = [Path(_) for _ in _bus_path.iterdir()]
+    _device_list = [Path(_) for _ in _bus_path.iterdir()] if _bus_path.is_dir() else []
     _acm_device_list = [
         Path(_)
         for _ in Path("/dev/").iterdir()
