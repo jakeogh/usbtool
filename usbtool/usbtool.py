@@ -145,9 +145,12 @@ def find_device(
     tries: int = 1,
     retry_delay: float = 0.5,
     required: bool = True,
+    devices: list[Path] | None = None,
 ) -> Path | None:
     """The device that answers, or, with required=False, None when none
-    does: for a caller that looks again later, absence is not an error."""
+    does: for a caller that looks again later, absence is not an error.
+    `devices` are the ports to look at, instead of every USB serial port:
+    a probe written to a port lands in whatever instrument is on it."""
 
     minone([command_hex, usb_id, serial_number, manufacturer])
 
@@ -157,7 +160,9 @@ def find_device(
                 "passing a command_hex argument requires that response_hex argument also be specified."
             )
 
-    if usb_id:
+    if devices is not None:
+        _devices = devices
+    elif usb_id:
         _devices = get_devices_for_usb_id(usb_id)
     else:
         _devices = get_devices()

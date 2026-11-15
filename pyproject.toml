@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "usbtool"
-version = "1!0.0.1792350394"
+version = "1!0.0.1794781011"
 description = "lookup usb tty device path by device id"
 authors = [
     { name = "Justin Keogh", email = "github.com@v6y.net" },
@@ -13,10 +13,10 @@ dependencies = [
     "sh",
     "asserttool @ git+https://github.com/jakeogh/asserttool@4bd23a06c2161e488415acde89c29537e6720cc1",
     "click-auto-help @ git+https://github.com/jakeogh/click-auto-help@9745b515e7beaaa046f802b5b3ad516720fc2475",
-    "clicktool @ git+https://github.com/jakeogh/clicktool@999e9c509115b90ab0149b0b611c0ca90a7baa85",
+    "clicktool @ git+https://github.com/jakeogh/clicktool@fe263331c27a4b392ce04261d83267759098d6b7",
     "eprint @ git+https://github.com/jakeogh/eprint@6ee1deca0c24b684eb5093247d6bd22e11f1b057",
-    "serialtool @ git+https://github.com/jakeogh/serialtool@d23be833e1a38f29600622ffad991e354c2e93d7",
-    "timetool @ git+https://github.com/jakeogh/timetool@715142c283d371c09f92df7f85f1a3cc0fdd8378",
+    "serialtool @ git+https://github.com/jakeogh/serialtool@4404f4c251e62562a420e4d051bc5c888908c931",
+    "timetool @ git+https://github.com/jakeogh/timetool@29c0ff8589e8fd932278635ca34913fe6540c932",
 ]
 license = "ISC"
 requires-python = ">=3.11"
